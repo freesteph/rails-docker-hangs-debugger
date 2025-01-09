@@ -6,4 +6,4 @@ COPY Gemfile Gemfile.lock ./
 
 RUN bundle install
 
-CMD ["bundle", "exec", "ruby", "main.rb"]
+CMD ["bundle", "exec", "ruby", "src/main.rb"]
