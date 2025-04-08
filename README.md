@@ -1,29 +1,60 @@
-# Ruby + Docker template
+# Rails + Docker + ruby/debug bug
 
-This starter kit provides a containerized Ruby environment to get
-hacking quickly without being a dirty dog.
+This repo helps reproduce a bug I'm encountering with Dockerized Rails
+applications and the `debug` gem.
 
-The Dockerfile is configured to run `bundle exec ruby src/main.rb`.
+The Rails application is generated with `rails new --minimal
+--no-docker`. The only configuration is the:
 
-## Getting started
-
-1. Clone this repo with a different name (or use the GitHub "Use this
-   template" feature):
-
-```sh
-git clone https://github.com/freesteph/ruby-docker-template.git your-fancy-hack
+```ruby
+require "debug/open_nonstop"
 ```
 
-2. Hack away
+in `config/environments/development.rb`.
+
+A `HomeController` is then generated with `rails new controller homeindex`,
+with a `debugger` breakpoint in it.
+
+## Reproducing
+
+### 1. Build the app
 
 ```sh
-emacs src/main.rb
+make build
 ```
 
-3. Run things in an environement that will work for *other* people:
+### 2. Launch the app
 
 ```sh
 make up
 ```
 
-See the [Makefile](./Makefile) for other ways to interact with your project.
+
+### 3. Hit the server page
+
+Browse at http://localhost:3000 . Then go into the
+`app/controllers/home_controller.rb` and uncomment the `debugger`
+line. Refresh the page and notice the debugger is waiting.
+
+### 4. Connect to the debug process
+
+```sh
+make debug
+```
+
+### 5. Explore the current context
+
+Notice the first command doesn't output properly (have to eval again
+to get the right value).
+
+### 6. Leave
+
+
+With Ctrl+C.
+
+
+### 7. Server is blocked
+
+The debug prompt doesn't return. The server process shows
+"Disconnected" but cannot resume the request (i.e page refresh don't
+work).
