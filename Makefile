@@ -12,3 +12,6 @@ down:
 
 sh:
 	$(DOCKER-RUN) app bash
+
+debug:
+	$(DOCKER-RUN) app $(BUNDLE-EXEC) rdbg -A app 12345
